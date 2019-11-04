@@ -1,4 +1,5 @@
 import numpy as np
 
-print("Hej Stefan")
+print("Hej Dennis")
 print("Ændring her")
+
