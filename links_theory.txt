@@ -1,2 +1,5 @@
 PPO:
  - https://github.com/higgsfield/RL-Adventure-2
+
+DQN:
+ - https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf
