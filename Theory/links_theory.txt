@@ -1,0 +1,11 @@
+PPO:
+ - https://github.com/higgsfield/RL-Adventure-2
+
+DQN:
+ - https://storage.googleapis.com/deepmind-media/dqn/DQNNaturePaper.pdf
+
+Github:
+ - https://github.com/RMiftakhov/LunarLander-v2-drlnd
+
+RL:
+ - https://towardsdatascience.com/introduction-to-various-reinforcement-learning-algorithms-i-q-learning-sarsa-dqn-ddpg-72a5e0cb6287
