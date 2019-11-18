@@ -57,23 +57,23 @@ class DQN(nn.Module):
         return int(np.prod(o.size()))
 
 
-def calculate_loss(batch, net, target_net, GAMMA, device="cpu"):
-    """
-    Calculate MSE between actual state action values,
-    and expected state action values from DQN
-    """
-    states, actions, rewards, dones, next_states = batch
+    def calculate_loss(self, batch, net, target_net, GAMMA, device="cpu"):
+        """
+        Calculate MSE between actual state action values,
+        and expected state action values from DQN
+        """
+        states, actions, rewards, dones, next_states = batch
 
-    states_v = torch.tensor(states).to(device)
-    next_states_v = torch.tensor(next_states).to(device)
-    actions_v = torch.tensor(actions).to(device)
-    rewards_v = torch.tensor(rewards).to(device)
-    done = torch.ByteTensor(dones).to(device)
+        states_v = torch.tensor(states).to(device)
+        next_states_v = torch.tensor(next_states).to(device)
+        actions_v = torch.tensor(actions).to(device)
+        rewards_v = torch.tensor(rewards).to(device)
+        done = torch.ByteTensor(dones).to(device)
 
-    state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
-    next_state_values = target_net(next_states_v).max(1)[0]
-    next_state_values[done] = 0.0
-    next_state_values = next_state_values.detach()
+        state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
+        next_state_values = target_net(next_states_v).max(1)[0]
+        next_state_values[done] = 0.0
+        next_state_values = next_state_values.detach()
 
-    expected_state_action_values = next_state_values * GAMMA + rewards_v
-    return nn.MSELoss()(state_action_values, expected_state_action_values)
+        expected_state_action_values = next_state_values * GAMMA + rewards_v
+        return nn.MSELoss()(state_action_values, expected_state_action_values)

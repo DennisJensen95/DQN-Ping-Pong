@@ -6,7 +6,7 @@ from lib.train import train
 from lib.Memory import Memory
 from lib.Agent import Agent
 from lib.atari_wrappers import make_env
-from lib.DQN_Network import calculate_loss, DQN
+from lib.DQN_Network import DQN
 option_dict = check_arg_sys_input()
 
 UP_ACTION = 2
