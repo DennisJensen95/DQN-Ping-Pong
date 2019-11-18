@@ -1,68 +1,56 @@
-from lib.ImageProcess import prepro, discount_rewards
 import torch
 import numpy as np
-from torch.autograd import Variable
+import time
 
-
-def train(episodes, env, model, UP_ACTION, DOWN_ACTION, initial_observation, device):
+def train(episodes, env, net, target_net, epsilon_data, agent, memory, gamma, device,
+          LEARNING_STARTS, TARGET_UPDATE_FREQ, batch_size):
     # main loop
+    frame_num = 0
     prev_input = None
-    observation = initial_observation
 
     # initialization of variables used in the main loop
     reward_sum = 0
-
-    # Turn into double
-    model = model.double()
-
-    # Hyperparameters
-    gamma = 0.99
+    total_rewards = []
+    start = time.time()
+    timestep_frame = 0
+    best_mean_reward = None
+    mean_reward_bound = 19.5
 
     for episode_nb in range(episodes):
         while True:
-            # 1. preprocess the observation, set input as difference between images
-            cur_input = prepro(observation)
-            x = cur_input - prev_input if prev_input is not None else np.zeros(80 * 80)
-            prev_input = cur_input
-            x = torch.from_numpy(x).to(device)
+            frame_num += 1
+            epsilon = max(epsilon_data[0], epsilon_data[1] - frame_num / epsilon_data[2])
 
-            # 2. forward the network on the image pixels
-            model.optimizer.zero_grad()
-            proba = model(x)
+            reward = agent.play_action(net, epsilon, device)
+            if reward is not None:
+                total_rewards.append(reward)
+                speed = (frame_num - timestep_frame) / (time.time() - start)
+                timestep_frame = frame_num
+                start = time.time()
+                mean_reward = np.mean(total_rewards[-100:])
+                print("{} frames: done {} games, mean reward {}, eps {}, speed {} f/s".format(
+                    frame_num, len(total_rewards), round(mean_reward, 3), round(epsilon, 2), round(speed, 2)))
 
-            # 3. Select action depending on probability of action.
-            action = UP_ACTION if np.random.uniform() < proba else DOWN_ACTION
-            y = 1 if action == 2 else 0  # 0 and 1 are our labels
+                if best_mean_reward is None or best_mean_reward < mean_reward or len(total_rewards) % 25 == 0:
+                    torch.save(net.state_dict(), "./data/Pong-v0" + "-" + str(len(total_rewards)) + ".dat")
+                    if best_mean_reward is not None:
+                        print("New best mean reward {} -> {}, model saved".format(round(best_mean_reward, 3),
+                                                                                  round(mean_reward, 3)))
+                    best_mean_reward = mean_reward
 
-            # 5. do one step in our environment
-            observation, reward, done, info = env.step(action)
-            reward_sum += reward
+                if mean_reward > mean_reward_bound and len(total_rewards) > 10:
+                    print("Game solved in {} frames! Average score of {}".format(frame_num, mean_reward))
+                    break
 
-            # end of an episode
-            if done:
-                print('At the end of episode', episode_nb, 'the total reward was :', reward_sum)
+                if len(memory.buffer) < LEARNING_STARTS:
+                    continue
 
-                cur_input = prepro(observation)
-                x = cur_input - prev_input if prev_input is not None else np.zeros(80 * 80)
-                prev_input = cur_input
-                x = torch.from_numpy(x).to(device)
+                if frame_num % TARGET_UPDATE_FREQ == 0:
+                    target_net.load_state_dict(net.state_dict())
 
-                # training
-                with torch.no_grad():
-                    Q1 = model(x)
-
-                q_target = Q1.clone()
-                q_target = reward + gamma * q_target.max().item()
-
-                loss = model.loss(proba, q_target)
-                loss.backward()
-                model.optimizer.step()
-
-                print(f'Loss is: {loss}')
-
-                # Reinitialization
-                observation = env.reset()
-                reward_sum = 0
-                prev_input = None
-
-                break
+                net.optimizer.zero_grad()
+                batch = memory.sample(batch_size)
+                loss_t = net.calculate_loss(batch, net, target_net, gamma, device)
+                loss_t.backward()
+                net.optimizer.step()
+            env.close()

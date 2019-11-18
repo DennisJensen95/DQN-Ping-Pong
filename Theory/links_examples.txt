@@ -1,0 +1,7 @@
+
+Good descriptions:
+- https://towardsdatascience.com/beating-video-games-with-deep-q-networks-7f73320b9592
+- Code: https://colab.research.google.com/drive/1NsbSPn6jOcaJB_mp9TmkgQX7UrRIrTi0#scrollTo=GDZ6Kub4Gopl
+
+Pytorch tutorials:
+ - https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html

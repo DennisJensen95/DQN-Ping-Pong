@@ -9,3 +9,6 @@ Github:
 
 RL:
  - https://towardsdatascience.com/introduction-to-various-reinforcement-learning-algorithms-i-q-learning-sarsa-dqn-ddpg-72a5e0cb6287
+
+Frameprocessing and skipping:
+ - https://danieltakeshi.github.io/2016/11/25/frame-skipping-and-preprocessing-for-deep-q-networks-on-atari-2600-games/?fbclid=IwAR0-RMMWaflcoe4sShMxG08jPRC8o7qMMvj1DbEVmZ0HdYpVsDatrNIbFe8
