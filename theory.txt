@@ -1,0 +1,2 @@
+Epsilon-greedy:
+ - https://www.youtube.com/watch?v=doR5bMe-Wic&feature=youtu.be - time: 1:04:00
