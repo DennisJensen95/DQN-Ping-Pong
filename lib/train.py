@@ -31,7 +31,7 @@ def train(episodes, env, net, target_net, epsilon_data, agent, memory, gamma, de
                 print("{} frames: done {} games, mean reward {}, eps {}, speed {} f/s".format(
                     frame_num, len(total_rewards), round(mean_reward, 3), round(epsilon, 2), round(speed, 2)))
 
-                if best_mean_reward is None or best_mean_reward < mean_reward or len(total_rewards) % 25 == 0:
+                if best_mean_reward is None or best_mean_reward < mean_reward:
                     torch.save(net.state_dict(), "./data/Pong-v0" + "-" + str(len(total_rewards)) + ".dat")
                     if best_mean_reward is not None:
                         print("New best mean reward {} -> {}, model saved".format(round(best_mean_reward, 3),
