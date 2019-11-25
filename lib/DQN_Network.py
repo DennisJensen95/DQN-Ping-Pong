@@ -45,12 +45,12 @@ class DQN(nn.Module):
             nn.Linear(512, n_actions)
         )
 
-        self.optimizer = optim.SGD(self.parameters(), lr=learning_rate)
+        self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
 
     def forward(self, x):
         x = self.conv(x)
         x = x.view(x.size()[0], -1)
-        return nn.Softmax(dim=1)(self.out(x))
+        return self.out(x)
 
     def conv_out_features(self, shape):
         o = self.conv(torch.zeros(1, *shape))
@@ -68,7 +68,7 @@ class DQN(nn.Module):
         next_states_v = torch.tensor(next_states).to(device)
         actions_v = torch.tensor(actions).to(device)
         rewards_v = torch.tensor(rewards).to(device)
-        done = torch.ByteTensor(dones).to(device)
+        done = torch.tensor(dones).to(device)
 
         state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
         next_state_values = target_net(next_states_v).max(1)[0]

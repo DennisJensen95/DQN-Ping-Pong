@@ -42,15 +42,16 @@ def train(episodes, env, net, target_net, epsilon_data, agent, memory, gamma, de
                     print("Game solved in {} frames! Average score of {}".format(frame_num, mean_reward))
                     break
 
-                if len(memory.buffer) < LEARNING_STARTS:
-                    continue
+            if len(memory.buffer) < LEARNING_STARTS:
+                continue
 
-                if frame_num % TARGET_UPDATE_FREQ == 0:
-                    target_net.load_state_dict(net.state_dict())
+            if frame_num % TARGET_UPDATE_FREQ == 0:
+                target_net.load_state_dict(net.state_dict())
+                print("Learning")
 
-                net.optimizer.zero_grad()
-                batch = memory.sample(batch_size)
-                loss_t = net.calculate_loss(batch, net, target_net, gamma, device)
-                loss_t.backward()
-                net.optimizer.step()
-            env.close()
+            net.optimizer.zero_grad()
+            batch = memory.sample(batch_size)
+            loss_t = net.calculate_loss(batch, net, target_net, gamma, device)
+            loss_t.backward()
+            net.optimizer.step()
+        env.close()
