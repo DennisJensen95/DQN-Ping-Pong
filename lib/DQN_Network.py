@@ -14,27 +14,27 @@ class DQN(nn.Module):
         conv_out_channels = 32  # <-- Filters in your convolutional layer
         kernel_size = 12  # <-- Kernel size
         conv_stride = 6  # <-- Stride
-        conv_pad = 1  # <-- Padding
+        conv_pad = 0  # <-- Padding
 
         # Second conv layer
         conv_out_channels_2 = 64  # <-- Filters in your convolutional layer
         kernel_size_2 = 6  # <-- Kernel size
         conv_stride_2 = 2  # <-- Stride
-        conv_pad_2 = 1  # <-- Padding
+        conv_pad_2 = 0  # <-- Padding
 
         # First max pooling
         kernel_size_pool1 = 3
         stride_pool1 = 2
-        padding_pool1 = 1
+        padding_pool1 = 0
 
         self.conv = nn.Sequential(
             nn.Conv2d(channels, conv_out_channels, kernel_size, conv_stride, conv_pad),
-            nn.Dropout(0.4),
-            nn.Conv2d(conv_out_channels, conv_out_channels_2, kernel_size_2, conv_stride_2, conv_pad_2),
-            nn.Dropout(0.4),
-            nn.MaxPool2d(kernel_size_pool1, stride_pool1, padding_pool1),
             nn.ReLU(),
-            nn.BatchNorm2d(conv_out_channels_2))
+            nn.Conv2d(conv_out_channels, conv_out_channels_2, kernel_size_2, conv_stride_2, conv_pad_2),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size_pool1, stride_pool1, padding_pool1),
+            nn.ReLU()
+        )
 
 
         out_features = self.conv_out_features(input_shape)

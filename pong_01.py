@@ -16,7 +16,7 @@ DOWN_ACTION = 3
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Epislon greedy parameters
-EPSILON_DECAY = 10**6
+EPSILON_DECAY = 10**7
 EPSILON_START = 1.0
 EPSILON_FINAL = 0.02
 epsilon_data = [EPSILON_FINAL, EPSILON_START, EPSILON_DECAY]
@@ -24,7 +24,7 @@ epsilon_data = [EPSILON_FINAL, EPSILON_START, EPSILON_DECAY]
 
 # Hyperparameters
 learning_rate = 1e-4
-REPLAY_SIZE = 10 ** 4 * 4
+REPLAY_SIZE = 10 ** 5
 BATCH_SIZE = 32
 TARGET_UPDATE_FREQ = 1000
 DELAY_LEARNING = 20000

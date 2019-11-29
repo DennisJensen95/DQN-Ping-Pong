@@ -9,13 +9,13 @@ def name_new(file, num=0):
         return name_new(file + f'_{num+1}', num+1)
     else:
         if os.path.exists(file):
-            print("Here?")
+            # print("Here?")
             remove_str = re.findall(f'_\d+', file)[0]
-            print(remove_str)
+            # print(remove_str)
             new_name = file.replace(remove_str, '') + f'_{num+1}'
             return name_new(new_name, num+1)
         else:
-            print(file)
+            # print(file)
             return file
 
 def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
@@ -33,10 +33,10 @@ def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
     mean_reward_bound = 19.5
     freq_saving_reward = 1000
     save_reward = False
-    print(os.getcwd())
+    # print(os.getcwd())
     filename = './data/frames_reward'
     file_name = name_new(filename)
-    print(file_name)
+    # print(file_name)
 
     while True:
         frame_num += 1
