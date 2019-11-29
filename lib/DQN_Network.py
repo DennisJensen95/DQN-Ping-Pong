@@ -50,7 +50,7 @@ class DQN(nn.Module):
     def forward(self, x):
         x = self.conv(x)
         x = x.view(x.size()[0], -1)
-        return self.out(x)
+        return nn.Softmax(dim=1)(self.out(x))
 
     def conv_out_features(self, shape):
         o = self.conv(torch.zeros(1, *shape))

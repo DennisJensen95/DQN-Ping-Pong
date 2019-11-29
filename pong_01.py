@@ -7,6 +7,7 @@ from lib.Memory import Memory
 from lib.Agent import Agent
 from lib.atari_wrappers import make_env
 from lib.DQN_Network import DQN
+from lib.Test_old_network import test_old_network
 option_dict = check_arg_sys_input()
 
 UP_ACTION = 2
@@ -47,8 +48,6 @@ if 'cuda' in str(device):
 else:
     print('The CPU is being used')
 
-episodes = 1000
-
 if option_dict['random']:
     play_random(env, UP_ACTION, DOWN_ACTION, seconds=5)
 
@@ -56,8 +55,14 @@ if option_dict['train']:
     print("Training")
     print("ReplayMemory will require {}gb of GPU RAM".format(round(REPLAY_SIZE * 32 * 84 * 84 / 1e+9, 2)))
     agent.reset_environtment()
-    train(episodes, env, net, target_net, epsilon_data, agent, memory, GAMMA, device,
+    train(env, net, target_net, epsilon_data, agent, memory, GAMMA, device,
                 DELAY_LEARNING, TARGET_UPDATE_FREQ, BATCH_SIZE)
+
+if option_dict['oldnetwork']:
+    file_path = './pull/data/Pong-v0-8803.dat'
+    seconds = 30
+    test_old_network(env, net, file_path, seconds, device)
+
 
 
 

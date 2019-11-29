@@ -1,2 +1,8 @@
 Epsilon-greedy:
  - https://www.youtube.com/watch?v=doR5bMe-Wic&feature=youtu.be - time: 1:04:00
+
+DOUBLE DQN:
+ - https://towardsdatascience.com/double-deep-q-networks-905dd8325412
+
+Performance measures:
+ - https://arxiv.org/pdf/1710.02298.pdf
