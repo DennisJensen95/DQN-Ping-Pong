@@ -3,3 +3,5 @@
 *.dat
 .idea/
 __pycache__/
+*__pycahce__/
+*.pyc
