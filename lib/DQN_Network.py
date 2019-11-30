@@ -12,27 +12,28 @@ class DQN(nn.Module):
 
         # First conv layer
         conv_out_channels = 32  # <-- Filters in your convolutional layer
-        kernel_size = 12  # <-- Kernel size
-        conv_stride = 6  # <-- Stride
+        kernel_size = 8  # <-- Kernel size
+        conv_stride = 4  # <-- Stride
         conv_pad = 0  # <-- Padding
 
         # Second conv layer
         conv_out_channels_2 = 64  # <-- Filters in your convolutional layer
-        kernel_size_2 = 6  # <-- Kernel size
+        kernel_size_2 = 4  # <-- Kernel size
         conv_stride_2 = 2  # <-- Stride
         conv_pad_2 = 0  # <-- Padding
 
-        # First max pooling
-        kernel_size_pool1 = 3
-        stride_pool1 = 2
-        padding_pool1 = 0
+        # Third conv layer
+        conv_out_channels_3 = 64  # <-- Filters in your convolutional layer
+        kernel_size_3 = 3  # <-- Kernel size
+        conv_stride_3 = 1  # <-- Stride
+        conv_pad_3 = 0  # <-- Padding
 
         self.conv = nn.Sequential(
             nn.Conv2d(channels, conv_out_channels, kernel_size, conv_stride, conv_pad),
             nn.ReLU(),
             nn.Conv2d(conv_out_channels, conv_out_channels_2, kernel_size_2, conv_stride_2, conv_pad_2),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size_pool1, stride_pool1, padding_pool1),
+            nn.Conv2d(conv_out_channels_3, conv_out_channels_3, kernel_size_3, conv_stride_3, conv_pad_3),
             nn.ReLU()
         )
 
@@ -57,7 +58,7 @@ class DQN(nn.Module):
         return int(np.prod(o.size()))
 
 
-    def calculate_loss(self, batch, net, target_net, GAMMA, device="cpu"):
+    def calculate_loss(self, batch, net, target_net, GAMMA, only_DQN, device="cpu"):
         """
         Calculate MSE between actual state action values,
         and expected state action values from DQN
@@ -70,10 +71,16 @@ class DQN(nn.Module):
         rewards_v = torch.tensor(rewards).to(device)
         done = torch.tensor(dones).to(device)
 
-        state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
-        next_state_values = target_net(next_states_v).max(1)[0]
+        if only_DQN:
+            state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
+            next_state_values = net(next_states_v).max(1)[0]
+        else:
+            state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
+            next_state_values = target_net(next_states_v).max(1)[0]
+
         next_state_values[done] = 0.0
         next_state_values = next_state_values.detach()
 
         expected_state_action_values = next_state_values * GAMMA + rewards_v
+
         return nn.MSELoss()(state_action_values, expected_state_action_values)

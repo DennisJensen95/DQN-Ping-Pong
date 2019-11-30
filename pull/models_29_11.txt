@@ -1,0 +1,5 @@
+Pong-v0 = DDQN Epsilon 10^6
+Pong-v0_e_10_5 = DDQN Epsilon 10^5
+
+DQN_Only = 10_5 epsilon
+DQN_Only_10_6 = 10_6 epsilon

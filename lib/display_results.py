@@ -30,7 +30,7 @@ def get_data(filename):
     e = np.array(e).astype(np.float)
     return x, y, e
 
-path = './../pull/data/frames_reward_1'
+path = './../pull/data/frames_reward_3'
 # path = './../data/frames_reward.dat'
 frame, reward, e = get_data(path)
 
