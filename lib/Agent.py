@@ -23,22 +23,14 @@ class Agent():
         q_values = network(state)
         _, pref_action = torch.max(q_values, dim=1)
         action = int(pref_action.item())
-        # print(action)
         return action
 
     def play_action(self, network, e=0, device='cpu'):
         done_reward = None
-        if np.random.uniform(0, 1) < e:
-            # Taking random action
+        if np.random.random() < e:
             action = self.env.action_space.sample()
-            # print(action)
-            # print("Totally random")
-            # time.sleep(1)
         else:
             action = self.random_epsilon_greedy(network, device)
-            # print(action)
-            # print("Epsilon random")
-            # time.sleep(1)
 
         # Do action in the environment
         new_state, reward, done, _ = self.env.step(action)

@@ -18,8 +18,29 @@ def name_new(file, num=0):
             # print(file)
             return file
 
+def update(batch_size, memory, net, target_net, gamma, model, device):
+    if model == 'DDQN' or model == 'DQN':
+        net.optimizer.zero_grad()
+        batch = memory.sample(batch_size)
+        loss_t = net.calculate_loss(batch, net, target_net, gamma, model, device)
+        loss_t.backward()
+        net.optimizer.step()
+    elif model == 'CDDQN':
+        batch = memory.sample(batch_size)
+        loss_1, loss_2 = net.calculate_loss(batch, net, target_net, gamma, model, device)
+
+        net.optimizer.zero_grad()
+        loss_1.backward()
+        net.optimizer.step()
+
+        target_net.optimizer.zero_grad()
+        loss_2.backward()
+        target_net.optimizer.step()
+
+
+
 def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
-          LEARNING_STARTS, TARGET_UPDATE_FREQ, batch_size, only_DQN):
+          LEARNING_STARTS, TARGET_UPDATE_FREQ, batch_size, model):
     # main loop
     frame_num = 0
     prev_input = None
@@ -30,17 +51,14 @@ def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
     start = time.time()
     timestep_frame = 0
     best_mean_reward = None
-    mean_reward_bound = 19.5
+    mean_reward_bound = 20.5
     freq_saving_reward = 1000
     save_reward = False
     # print(os.getcwd())
     filename = './data/frames_reward'
     file_name = name_new(filename)
     # print(file_name)
-    if only_DQN:
-        name_to_save = 'DQN_only'
-    else:
-        name_to_save = 'DDQN'
+    name_to_save = model
 
     while True:
         frame_num += 1
@@ -61,7 +79,7 @@ def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
                 frame_num, len(total_rewards), round(mean_reward, 3), round(epsilon, 2), round(speed, 2)))
 
             if best_mean_reward is None or best_mean_reward < mean_reward:
-                torch.save(net.state_dict(), f'./data/{name_to_save}_10_6' + "-" + str(len(total_rewards)) + ".dat")
+                torch.save(net.state_dict(), f'./data/{name_to_save}_without_soft' + "-" + str(len(total_rewards)) + ".dat")
                 if best_mean_reward is not None:
                     print("New best mean reward {} -> {}, model saved".format(round(best_mean_reward, 3),
                                                                               round(mean_reward, 3)))
@@ -80,13 +98,10 @@ def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
         if len(memory.buffer) < LEARNING_STARTS:
             continue
 
-        if frame_num % TARGET_UPDATE_FREQ == 0:
+        if frame_num % TARGET_UPDATE_FREQ == 0 and model != 'CDDQN':
             target_net.load_state_dict(net.state_dict())
-            print("Learning")
 
-        net.optimizer.zero_grad()
-        batch = memory.sample(batch_size)
-        loss_t = net.calculate_loss(batch, net, target_net, gamma, only_DQN, device)
-        loss_t.backward()
-        net.optimizer.step()
+        # Update depending on model
+        update(batch_size, memory, net, target_net, gamma, model, device)
+
     env.close()

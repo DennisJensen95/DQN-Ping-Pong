@@ -16,7 +16,7 @@ DOWN_ACTION = 3
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Epislon greedy parameters
-EPSILON_DECAY = 10**6
+EPSILON_DECAY = 10**5
 EPSILON_START = 1.0
 EPSILON_FINAL = 0.02
 epsilon_data = [EPSILON_FINAL, EPSILON_START, EPSILON_DECAY]
@@ -30,7 +30,7 @@ TARGET_UPDATE_FREQ = 1000
 DELAY_LEARNING = 20000
 GAMMA = 0.99
 
-only_DQN = False
+model = 'CDDQN'
 
 # Environment and neural networks
 env = make_env('Pong-v0')
@@ -58,10 +58,10 @@ if option_dict['train']:
     print("ReplayMemory will require {}gb of GPU RAM".format(round(REPLAY_SIZE * 32 * 84 * 84 / 1e+9, 2)))
     agent.reset_environtment()
     train(env, net, target_net, epsilon_data, agent, memory, GAMMA, device,
-                DELAY_LEARNING, TARGET_UPDATE_FREQ, BATCH_SIZE, only_DQN)
+                DELAY_LEARNING, TARGET_UPDATE_FREQ, BATCH_SIZE, model)
 
 if option_dict['oldnetwork']:
-    file_path = './pull/data/Pong-v0-8803.dat'
+    file_path = './pull/Best_performing_model/DDQN_10_6-reward_7.97.dat'
     seconds = 30
     test_old_network(env, net, file_path, seconds, device)
 

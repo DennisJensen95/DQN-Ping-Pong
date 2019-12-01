@@ -13,7 +13,7 @@ def get_data(filename):
     lines = data.split('\n')
 
     for line in lines:
-        data_point = re.findall('-?\d+.?\d+', line)
+        data_point = re.findall('(-?[\d.]+)', line)
         print(data_point)
         if len(data_point) > 2:
             x_result, y_result, e_result = data_point[0], data_point[1], data_point[2]
@@ -33,7 +33,10 @@ def get_data(filename):
 path = './../pull/data/frames_reward_3'
 # path = './../data/frames_reward.dat'
 frame, reward, e = get_data(path)
-
+frame = frame[1:]
+print(max(reward))
+reward = reward[1:]
+e = e[1:]
 plt.figure()
 plt.plot(frame, reward)
 plt.ylabel('Reward')

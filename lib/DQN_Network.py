@@ -51,14 +51,14 @@ class DQN(nn.Module):
     def forward(self, x):
         x = self.conv(x)
         x = x.view(x.size()[0], -1)
-        return nn.Softmax(dim=1)(self.out(x))
+        return self.out(x)
 
     def conv_out_features(self, shape):
         o = self.conv(torch.zeros(1, *shape))
         return int(np.prod(o.size()))
 
 
-    def calculate_loss(self, batch, net, target_net, GAMMA, only_DQN, device="cpu"):
+    def calculate_loss(self, batch, net, target_net, GAMMA, model, device="cpu"):
         """
         Calculate MSE between actual state action values,
         and expected state action values from DQN
@@ -71,16 +71,42 @@ class DQN(nn.Module):
         rewards_v = torch.tensor(rewards).to(device)
         done = torch.tensor(dones).to(device)
 
-        if only_DQN:
-            state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
-            next_state_values = net(next_states_v).max(1)[0]
-        else:
-            state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
-            next_state_values = target_net(next_states_v).max(1)[0]
+        if model == 'DQN' or model == 'DDQN':
+            if model == 'DQN':
+                state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
+                next_state_values = net(next_states_v).max(1)[0]
+            elif model == 'DDQN':
+                state_action_values = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
+                next_state_values = target_net(next_states_v).max(1)[0]
 
-        next_state_values[done] = 0.0
-        next_state_values = next_state_values.detach()
+            next_state_values[done] = 0.0
+            next_state_values = next_state_values.detach()
 
-        expected_state_action_values = next_state_values * GAMMA + rewards_v
+            expected_state_action_values = next_state_values * GAMMA + rewards_v
 
-        return nn.MSELoss()(state_action_values, expected_state_action_values)
+            return nn.MSELoss()(state_action_values, expected_state_action_values)
+
+        elif model == 'CDDQN':
+            state_Q1 = net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
+            state_Q2 = target_net(states_v).gather(1, actions_v.long().unsqueeze(-1)).squeeze(-1)
+
+            next_Q1 = net(next_states_v).max(1)[0]
+            next_Q2 = target_net(next_states_v).max(1)[0]
+            # print(next_Q2)
+            next_Q = torch.min(
+                next_Q1,
+                next_Q2
+            )
+
+            # next_Q = next_Q.view(next_Q.size(0), 1)
+            next_Q[done] = 0.0
+            next_Q = next_Q.detach()
+
+            expected_Q = rewards_v + GAMMA * next_Q
+            # expected_Q = expected_Q.detach()
+
+            loss_1 = nn.MSELoss()(state_Q1, expected_Q)
+            loss_2 = nn.MSELoss()(state_Q2, expected_Q)
+
+            return loss_1, loss_2
+
