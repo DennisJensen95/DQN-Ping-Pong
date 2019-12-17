@@ -3,7 +3,7 @@ import torch
 from lib.random_play import play_random
 from lib.helper_functions import check_arg_sys_input
 from lib.train import train
-from lib.Memory import Memory
+from lib.Memory import Memory, Memory2
 from lib.Agent import Agent
 from lib.atari_wrappers import make_env
 from lib.DQN_Network import DQN
@@ -27,7 +27,7 @@ learning_rate = 1e-4
 REPLAY_SIZE = 10 ** 4 * 4
 BATCH_SIZE = 32
 TARGET_UPDATE_FREQ = 1000
-DELAY_LEARNING = 20000
+DELAY_LEARNING = 50000
 GAMMA = 0.99
 
 model = 'CDDQN'
@@ -38,7 +38,7 @@ net = DQN(env.observation_space.shape, env.action_space.n, learning_rate).to(dev
 target_net = DQN(env.observation_space.shape, env.action_space.n, learning_rate).to(device)
 
 # Agent and memory handling
-memory = Memory(REPLAY_SIZE)
+memory = Memory2(REPLAY_SIZE)
 agent = Agent(env, memory)
 
 initial_observation = env.reset()

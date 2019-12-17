@@ -98,7 +98,7 @@ def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
         if len(memory.buffer) < LEARNING_STARTS:
             continue
 
-        if frame_num % TARGET_UPDATE_FREQ == 0 and model != 'CDDQN':
+        if frame_num % TARGET_UPDATE_FREQ == 0 and model == 'DDQN':
             target_net.load_state_dict(net.state_dict())
 
         # Update depending on model
