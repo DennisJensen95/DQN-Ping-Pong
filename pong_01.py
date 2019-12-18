@@ -1,4 +1,5 @@
 import gym
+import sys
 import torch
 from lib.random_play import play_random
 from lib.helper_functions import check_arg_sys_input
@@ -16,7 +17,7 @@ DOWN_ACTION = 3
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Epislon greedy parameters
-EPSILON_DECAY = 10**5
+EPSILON_DECAY = 10**6
 EPSILON_START = 1.0
 EPSILON_FINAL = 0.02
 epsilon_data = [EPSILON_FINAL, EPSILON_START, EPSILON_DECAY]
@@ -34,6 +35,7 @@ model = 'CDDQN'
 
 # Environment and neural networks
 env = make_env('Pong-v0')
+env_test = gym.make('Pong-v0')
 net = DQN(env.observation_space.shape, env.action_space.n, learning_rate).to(device)
 target_net = DQN(env.observation_space.shape, env.action_space.n, learning_rate).to(device)
 
@@ -61,8 +63,8 @@ if option_dict['train']:
                 DELAY_LEARNING, TARGET_UPDATE_FREQ, BATCH_SIZE, model)
 
 if option_dict['oldnetwork']:
-    file_path = './pull/Best_performing_model/DDQN_10_6-reward_7.97.dat'
-    seconds = 30
+    file_path = './pull/Best_performing_model/DDQN/DDQN-5233.dat'
+    seconds = 120
     test_old_network(env, net, file_path, seconds, device)
 
 

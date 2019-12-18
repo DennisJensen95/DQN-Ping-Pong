@@ -6,3 +6,6 @@ DOUBLE DQN:
 
 Performance measures:
  - https://arxiv.org/pdf/1710.02298.pdf
+
+DQN:
+ - https://towardsdatascience.com/dqn-part-1-vanilla-deep-q-networks-6eb4a00febfb
