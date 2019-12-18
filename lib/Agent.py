@@ -1,7 +1,10 @@
 import torch
 import numpy as np
 from lib.ImageProcess import ImageProcessing
+import collections
 import time
+
+Experience = collections.namedtuple('Experience', field_names=['state', 'action', 'reward', 'done', 'new_state'])
 
 class Agent():
     def __init__(self, env, memory):
@@ -38,7 +41,9 @@ class Agent():
         old_state = self.env_state
         self.env_state = new_state
 
-        self.memory.save_to_memory(old_state, action, reward, done, self.env_state)
+        #self.memory.save_to_memory(old_state, action, reward, done, self.env_state)
+        exp = Experience(old_state, action, reward, done, self.env_state)
+        self.memory.append(exp)
 
         if done:
             done_reward = self.total_reward
