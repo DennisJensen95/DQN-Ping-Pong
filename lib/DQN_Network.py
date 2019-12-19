@@ -92,7 +92,7 @@ class DQN(nn.Module):
 
             next_Q1 = net(next_states_v).max(1)[0]
             next_Q2 = target_net(next_states_v).max(1)[0]
-            # print(next_Q2)
+
             next_Q = torch.min(
                 next_Q1,
                 next_Q2
@@ -103,7 +103,6 @@ class DQN(nn.Module):
             next_Q = next_Q.detach()
 
             expected_Q = rewards_v + GAMMA * next_Q
-            # expected_Q = expected_Q.detach()
 
             loss_1 = nn.MSELoss()(state_Q1, expected_Q)
             loss_2 = nn.MSELoss()(state_Q2, expected_Q)

@@ -507,7 +507,7 @@ DOWN_ACTION = 3
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # This options dict was created from sys.argv[x] normally, but in ipynb this is redundant, hence a dictionary is made here.
-option_dict = {'random': False, 'train': False, 'oldnetwork': True} # Change dictionary values for decision making.
+option_dict = {'random': False, 'train': False, 'oldnetwork': False} # Change dictionary values for decision making.
 model = 'DDQN' # Either DQN, DDQN or CDDQN
 
 # Environment and neural networks
@@ -549,109 +549,129 @@ if option_dict['oldnetwork']:
     The GPU is being used
 
 
-
-    ---------------------------------------------------------------------------
-
-    NameError                                 Traceback (most recent call last)
-
-    <ipython-input-48-e9934ac4ac3b> in <module>
-         39     file_path = './pull/Best_performing_model/DDQN_10_6-reward_7.97.dat'
-         40     seconds = 30
-    ---> 41     test_old_network(env, net, file_path, seconds, device)
-    
-
-    ~/Google Drev/DTU/7. Semester/DQN-Ping-Pong/lib/Test_old_network.py in test_old_network(env, net, file_path, seconds, device)
-         16     while True:
-         17         # render a frame
-    ---> 18         env.render()
-         19 
-         20         # choose random action
-
-
-    ~/.local/lib/python3.6/site-packages/gym/core.py in render(self, mode, **kwargs)
-        231 
-        232     def render(self, mode='human', **kwargs):
-    --> 233         return self.env.render(mode, **kwargs)
-        234 
-        235     def close(self):
-
-
-    ~/.local/lib/python3.6/site-packages/gym/core.py in render(self, mode, **kwargs)
-        231 
-        232     def render(self, mode='human', **kwargs):
-    --> 233         return self.env.render(mode, **kwargs)
-        234 
-        235     def close(self):
-
-
-    ~/.local/lib/python3.6/site-packages/gym/core.py in render(self, mode, **kwargs)
-        231 
-        232     def render(self, mode='human', **kwargs):
-    --> 233         return self.env.render(mode, **kwargs)
-        234 
-        235     def close(self):
-
-
-    ~/.local/lib/python3.6/site-packages/gym/core.py in render(self, mode, **kwargs)
-        231 
-        232     def render(self, mode='human', **kwargs):
-    --> 233         return self.env.render(mode, **kwargs)
-        234 
-        235     def close(self):
-
-
-    ~/.local/lib/python3.6/site-packages/gym/core.py in render(self, mode, **kwargs)
-        231 
-        232     def render(self, mode='human', **kwargs):
-    --> 233         return self.env.render(mode, **kwargs)
-        234 
-        235     def close(self):
-
-
-    ~/.local/lib/python3.6/site-packages/gym/core.py in render(self, mode, **kwargs)
-        231 
-        232     def render(self, mode='human', **kwargs):
-    --> 233         return self.env.render(mode, **kwargs)
-        234 
-        235     def close(self):
-
-
-    ~/.local/lib/python3.6/site-packages/gym/core.py in render(self, mode, **kwargs)
-        231 
-        232     def render(self, mode='human', **kwargs):
-    --> 233         return self.env.render(mode, **kwargs)
-        234 
-        235     def close(self):
-
-
-    ~/.local/lib/python3.6/site-packages/gym/envs/atari/atari_env.py in render(self, mode)
-        150             return img
-        151         elif mode == 'human':
-    --> 152             from gym.envs.classic_control import rendering
-        153             if self.viewer is None:
-        154                 self.viewer = rendering.SimpleImageViewer()
-
-
-    ~/.local/lib/python3.6/site-packages/gym/envs/classic_control/rendering.py in <module>
-         25 
-         26 try:
-    ---> 27     from pyglet.gl import *
-         28 except ImportError as e:
-         29     raise ImportError('''
-
-
-    ~/.local/lib/python3.6/site-packages/pyglet/gl/__init__.py in <module>
-        225     else:
-        226         from .carbon import CarbonConfig as Config
-    --> 227 del base
-        228 
-        229 # XXX remove
-
-
-    NameError: name 'base' is not defined
+## After all three models have been trained displaying results is:
 
 
 
 ```python
+import re
+import matplotlib.pyplot as plt
+from matplotlib import ticker
 
+
+def get_data(filename):
+    x = []
+    y = []
+    e = []
+    file = open(filename, 'r+')
+    data = file.read()
+    file.close()
+    lines = data.split('\n')
+
+    for line in lines:
+        data_point = re.findall('(-?[\d.]+)', line)
+        # print(data_point)
+        if len(data_point) > 2:
+            x_result, y_result, e_result = data_point[0], data_point[1], data_point[2]
+            x.append(x_result)
+            y.append(y_result)
+            e.append(e_result)
+        elif len(data_point) > 1:
+            x_result, y_result = data_point[0], data_point[1]
+            x.append(x_result)
+            y.append(y_result)
+
+    x = np.array(x).astype(np.float)
+    y = np.array(y).astype(np.float)
+    e = np.array(e).astype(np.float)
+    return x, y, e
+
+def plot_one():
+    path = './../pull/data/frames_reward_8'
+    # path = './../data/frames_reward.dat'
+    frame, reward, e = get_data(path)
+    frame = frame[1:]
+    # print(max(reward))
+    reward = reward[1:]
+    e = e[1:]
+    plt.figure()
+    plt.plot(frame, reward)
+    plt.ylabel('Reward')
+    plt.xlabel('Number of frames')
+    if len(e) > 1:
+        plt.figure()
+        plt.plot(frame, e)
+        plt.xlabel('Number of frames')
+        plt.ylabel('Epsilon')
+
+    plt.show()
+
+def millions(x, pos):
+    'The two args are the value and tick position'
+    return '%1.1fM' % (x * 1e-6)
+
+def plot_epsilon():
+    DDQN_path = './pull/Best_performing_model/DDQN/DDQN_frames_reward'
+
+    x, y, e = get_data(DDQN_path)
+    fig, ax = plt.subplots()
+
+    e = e[:200]
+    x = x[:200]
+    plt.plot(x, e)
+    plt.xlabel('Number of frames')
+    plt.ylabel('Epsilon value')
+    # formatter = ticker.FuncFormatter(millions)
+    # ax.xaxis.set_major_formatter(formatter)
+
+    plt.show()
+
+def plot_multiple():
+    """"""
+    DDQN_path = './pull/pong_v4_data/frames_reward'
+    DQN_path = './pull/pong_v4_data/frames_reward_1'
+    CDQN_path = './pull/pong_v4_data/frames_reward_2'
+    
+    paths = [DQN_path, DDQN_path, CDQN_path]
+
+    # path = './../data/frames_reward.dat'
+    i = 0
+    max_frame = 0
+    min_frame = 0
+    for file in paths:
+        frame, reward, e = get_data(file)
+        frame = frame[1:]
+        reward = reward[1:]
+        if max(frame) > max_frame:
+            max_frame = max(frame)
+        if min(frame) < min_frame:
+            min_frame = min(frame)
+
+        #print(max_frame/len(frame))
+
+        #print(f'{max(reward)}')
+
+        if i == 0:
+            fig, ax = plt.subplots()
+        x = []
+        # frame = millions(frame)
+        plt.plot(frame, reward)
+        plt.ylabel('Reward')
+        plt.xlabel('Number of frames')
+        i += 1
+
+    plt.hlines(-3, min_frame, max_frame)
+    formatter = ticker.FuncFormatter(millions)
+
+    plt.legend(['DQN', 'Double DQN', 'Clipped Double DQN', 'Average Human Performance'])
+    ax.xaxis.set_major_formatter(formatter)
+
+    plt.show()
+
+if __name__ == '__main__':
+    plot_multiple()
 ```
+
+
+![png](RL_DQN_Pong_files/RL_DQN_Pong_19_0.png)
+
