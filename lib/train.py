@@ -55,7 +55,7 @@ def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
     freq_saving_reward = 1000
     save_reward = False
     # print(os.getcwd())
-    filename = './data/frames_reward'
+    filename = './pong_v4/frames_reward'
     file_name = name_new(filename)
     # print(file_name)
     name_to_save = model
@@ -79,7 +79,7 @@ def train(env, net, target_net, epsilon_data, agent, memory, gamma, device,
                 frame_num, len(total_rewards), round(mean_reward, 3), round(epsilon, 2), round(speed, 2)))
 
             if best_mean_reward is None or best_mean_reward < mean_reward:
-                torch.save(net.state_dict(), f'./data/{name_to_save}_without_soft' + "-" + str(len(total_rewards)) + ".dat")
+                torch.save(net.state_dict(), f'./pong_v4/{name_to_save}_10_6' + "-" + str(len(total_rewards)) + ".dat")
                 if best_mean_reward is not None:
                     print("New best mean reward {} -> {}, model saved".format(round(best_mean_reward, 3),
                                                                               round(mean_reward, 3)))

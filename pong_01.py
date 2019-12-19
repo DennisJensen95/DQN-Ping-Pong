@@ -24,21 +24,21 @@ epsilon_data = [EPSILON_FINAL, EPSILON_START, EPSILON_DECAY]
 
 # Hyperparameters
 learning_rate = 1e-4
-REPLAY_SIZE = 10 ** 4 * 4
+REPLAY_SIZE = 100000
 BATCH_SIZE = 32
 TARGET_UPDATE_FREQ = 1000
 DELAY_LEARNING = 50000
 GAMMA = 0.99
 
-model = 'CDDQN'
+model = 'DDQN'
 
 # Environment and neural networks
-env = make_env('Pong-v0')
+env = make_env('PongNoFrameskip-v4')
 net = DQN(env.observation_space.shape, env.action_space.n, learning_rate).to(device)
 target_net = DQN(env.observation_space.shape, env.action_space.n, learning_rate).to(device)
 
 # Agent and memory handling
-memory = Memory2(REPLAY_SIZE)
+memory = Memory(REPLAY_SIZE)
 agent = Agent(env, memory)
 
 initial_observation = env.reset()
