@@ -374,6 +374,8 @@ import re
 
 
 ```python
+# Some of the training loop has been inspired by https://colab.research.google.com/drive/1NsbSPn6jOcaJB_mp9TmkgQX7UrRIrTi0
+
 def name_new(file, num=0):
     if os.path.exists(file) and num==0:
         return name_new(file + f'_{num+1}', num+1)
@@ -628,13 +630,12 @@ def plot_epsilon():
 
 def plot_multiple():
     """"""
-    DDQN_path = './pull/pong_v4_data/frames_reward'
-    DQN_path = './pull/pong_v4_data/frames_reward_1'
-    CDQN_path = './pull/pong_v4_data/frames_reward_2'
+    DDQN_path = './pull/pong_v4_data/DQN_reward'
+    DQN_path = './pull/pong_v4_data/DDQN_reward'
+    CDQN_path = './pull/pong_v4_data/CDDQN_reward'
     
     paths = [DQN_path, DDQN_path, CDQN_path]
-
-    # path = './../data/frames_reward.dat'
+    
     i = 0
     max_frame = 0
     min_frame = 0

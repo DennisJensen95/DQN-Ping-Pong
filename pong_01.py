@@ -3,7 +3,7 @@ import torch
 from lib.random_play import play_random
 from lib.helper_functions import check_arg_sys_input
 from lib.train import train
-from lib.Memory import Memory, Memory2
+from lib.Memory import Memory
 from lib.Agent import Agent
 from lib.atari_wrappers import make_env
 from lib.DQN_Network import DQN
@@ -61,7 +61,7 @@ if option_dict['train']:
                 DELAY_LEARNING, TARGET_UPDATE_FREQ, BATCH_SIZE, model)
 
 if option_dict['oldnetwork']:
-    file_path = './pull/Best_performing_model/DDQN_10_6-reward_7.97.dat'
+    file_path = './pull/pong_v4_data/DQN/DQN_10_6-886.dat'
     seconds = 30
     test_old_network(env, net, file_path, seconds, device)
 
