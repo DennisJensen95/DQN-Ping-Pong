@@ -30,7 +30,9 @@ def get_data(filename):
     e = np.array(e).astype(np.float)
     return x, y, e
 
-path = './../pull/data/frames_reward_3'
+import os
+print(os.getcwd())
+path = './../pull/pong_v4_data/frames_reward_2'
 # path = './../data/frames_reward.dat'
 frame, reward, e = get_data(path)
 frame = frame[1:]
