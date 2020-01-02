@@ -73,9 +73,9 @@ def plot_epsilon():
 
 def plot_multiple():
     """"""
-    DDQN_path = './../pull/Best_performing_model/DDQN/DDQN_frames_reward'
-    DQN_path = './../pull/Best_performing_model/DQN/DQN_frames_reward'
-    CDQN_path = './../pull/Best_performing_model/CDQN/frames_reward'
+    DDQN_path = './../pull/pong_v4_data/frames_reward_1'
+    DQN_path = './../pull/pong_v4_data/frames_reward'
+    CDQN_path = './../pull/pong_v4_data/frames_reward_2'
     paths = [DQN_path, DDQN_path, CDQN_path]
 
     # path = './../data/frames_reward.dat'

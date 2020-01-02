@@ -26,7 +26,7 @@ def test_old_network(env, net, file_path, seconds, device):
         action = int(pref_action.item())
         # run one step
         new_state, reward, done, info = env.step(action)
-        time.sleep(0.05)
+        time.sleep(0.005)
 
         # if the episode is over, reset the environment
         if done:

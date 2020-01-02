@@ -34,8 +34,8 @@ GAMMA = 0.99
 model = 'CDDQN'
 
 # Environment and neural networks
-env = make_env('Pong-v0')
-env_test = gym.make('Pong-v0')
+env = make_env("PongNoFrameskip-v4")
+env_test = gym.make("PongNoFrameskip-v4")
 net = DQN(env.observation_space.shape, env.action_space.n, learning_rate).to(device)
 target_net = DQN(env.observation_space.shape, env.action_space.n, learning_rate).to(device)
 
@@ -63,7 +63,7 @@ if option_dict['train']:
                 DELAY_LEARNING, TARGET_UPDATE_FREQ, BATCH_SIZE, model)
 
 if option_dict['oldnetwork']:
-    file_path = './pull/Best_performing_model/DDQN/DDQN-5233.dat'
+    file_path = './pull/pong_v4_data/DQN/DQN_10_6-1700.dat'
     seconds = 120
     test_old_network(env, net, file_path, seconds, device)
 
